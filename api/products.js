@@ -93,13 +93,6 @@ export default async function handler(req, res) {
 
   return res.status(mockupResponse.status).json(mockupData);
 }
-    
-    const mockupStylesResponse = await fetch(
-  'https://api.printful.com/v2/catalog-products/456/mockup-styles',
-  { headers }
-);
-
-const mockupStylesData = await mockupStylesResponse.json();
 
     // 2. Récupération des détails + variantes + prix
     const detailedProducts = await Promise.all(
@@ -128,14 +121,25 @@ const mockupStylesData = await mockupStylesResponse.json();
           .map((variant) => parseFloat(variant.retail_price))
           .filter((price) => !Number.isNaN(price));
 
-        return {
-          ...syncProduct,
-          sync_variants: syncVariants,
-          price:
-            prices.length > 0
-              ? Math.min(...prices).toFixed(2)
-              : null,
-        };
+        const mockupImages =
+  product.id === 474053427
+    ? [
+        'https://printful-upload.s3-accelerate.amazonaws.com/tmp/1ec8e578465f98d102603a09b392145d/unisex-organic-cotton-creator-2.0-t-shirt-white-front-6ab14e19531f3.jpg',
+        'https://printful-upload.s3-accelerate.amazonaws.com/tmp/84064e65ac6f46238d54d7b077207963/unisex-organic-cotton-creator-2.0-t-shirt-white-back-6ab14e19539da.jpg',
+        'https://printful-upload.s3-accelerate.amazonaws.com/tmp/16c32c3f4b5fa1729714db310096dea4/unisex-organic-cotton-creator-2.0-t-shirt-white-left-front-6ab14e1953c31.jpg',
+        'https://printful-upload.s3-accelerate.amazonaws.com/tmp/8b6819eac930ea3b421fce8449e3aaa1/unisex-organic-cotton-creator-2.0-t-shirt-white-right-front-6ab14e1953da2.jpg',
+      ]
+    : [];
+
+       return {
+  ...syncProduct,
+  sync_variants: syncVariants,
+  mockup_images: mockupImages,
+  price:
+    prices.length > 0
+      ? Math.min(...prices).toFixed(2)
+      : null,
+};
       })
     );
 
