@@ -67,7 +67,7 @@ export default async function handler(req, res) {
                 layers: [
                   {
                     type: 'file',
-                    url: 'https://files.cdn.printful.com/files/...',
+                    url: 'https://files.cdn.printful.com/files/6e8/6e81090fa346321188561a9d7faab5e3_preview.png',
                   },
                 ],
               },
