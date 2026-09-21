@@ -40,6 +40,17 @@ export default async function handler(req, res) {
 
     const products = data.result ?? [];
 
+    if (req.query.mockups === 'stores') {
+  const storesResponse = await fetch(
+    'https://api.printful.com/stores',
+    { headers }
+  );
+
+  const storesData = await storesResponse.json();
+
+  return res.status(storesResponse.status).json(storesData);
+}
+
     if (req.query.mockups === 'v2product') {
   const v2Response = await fetch(
     'https://api.printful.com/v2/products/474053427',
