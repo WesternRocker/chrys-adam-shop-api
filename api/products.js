@@ -44,7 +44,7 @@ export default async function handler(req, res) {
 
   if (req.query.mockups === 'result') {
   const resultResponse = await fetch(
-    'https://api.printful.com/v2/mockup-tasks?id=972123004',
+    'https://api.printful.com/v2/mockup-tasks?id=972127790',
     { headers }
   );
 
