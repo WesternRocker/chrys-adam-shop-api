@@ -72,17 +72,27 @@ export default async function handler(req, res) {
             catalog_variant_ids: [11864],
             mockup_style_ids: [6094, 6095, 6098, 6099],
             placements: [
-              {
-                placement: 'front',
-                technique: 'dtg',
-                layers: [
-                  {
-                    type: 'file',
-                    url: 'https://files.cdn.printful.com/files/6e8/6e81090fa346321188561a9d7faab5e3_preview.png',
-                  },
-                ],
-              },
-            ],
+  {
+    placement: 'front',
+    technique: 'dtg',
+    layers: [
+      {
+        type: 'file',
+        url: 'https://files.cdn.printful.com/files/6e8/6e81090fa346321188561a9d7faab5e3_preview.png',
+      },
+    ],
+  },
+  {
+    placement: 'back',
+    technique: 'dtg',
+    layers: [
+      {
+        type: 'file',
+        url: 'https://files.cdn.printful.com/files/0fc/0fccd5d55c188648ada125ee105fcc07_preview.png',
+      },
+    ],
+  },
+],
           },
         ],
       }),
