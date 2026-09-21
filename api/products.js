@@ -48,33 +48,15 @@ const mockupStylesResponse = await fetch(
 
 const mockupStylesData = await mockupStylesResponse.json();
 
-if (req.query.mockups === 'generate') {
-  const mockupResponse = await fetch(
-    'https://api.printful.com/v2/mockup-tasks',
-    {
-      method: 'POST',
-      headers: {
-        ...headers,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        format: 'jpg',
-        mockup_width_px: 1000,
-        products: [
-          {
-            source: 'product',
-            product_id: 474053427,
-            variant_ids: [5511599262],
-            mockup_style_ids: [6094, 6095, 6098, 6099],
-          },
-        ],
-      }),
-    }
+if (req.query.mockups === 'product') {
+  const productResponse = await fetch(
+    'https://api.printful.com/v2/products?store_product_ids=474053427',
+    { headers }
   );
 
-  const mockupData = await mockupResponse.json();
+  const productData = await productResponse.json();
 
-  return res.status(mockupResponse.status).json(mockupData);
+  return res.status(productResponse.status).json(productData);
 }
 
     // 2. Récupération des détails + variantes + prix
