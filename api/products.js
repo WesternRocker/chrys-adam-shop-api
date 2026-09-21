@@ -48,10 +48,9 @@ const mockupStylesResponse = await fetch(
 
 const mockupStylesData = await mockupStylesResponse.json();
 
-console.log(
-  'MOCKUP STYLES T-SHIRT:',
-  JSON.stringify(mockupStylesData, null, 2)
-);
+if (req.query.mockups === 'test') {
+  return res.status(200).json(mockupStylesData);
+}
 
     // 2. Récupération des détails + variantes + prix
     const detailedProducts = await Promise.all(
