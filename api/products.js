@@ -40,6 +40,19 @@ export default async function handler(req, res) {
 
     const products = data.result ?? [];
 
+    // TEST - styles de mockups disponibles pour le T-shirt
+const mockupStylesResponse = await fetch(
+  'https://api.printful.com/v2/catalog-products/456/mockup-styles',
+  { headers }
+);
+
+const mockupStylesData = await mockupStylesResponse.json();
+
+console.log(
+  'MOCKUP STYLES T-SHIRT:',
+  JSON.stringify(mockupStylesData, null, 2)
+);
+
     // 2. Récupération des détails + variantes + prix
     const detailedProducts = await Promise.all(
       products.map(async (product) => {
