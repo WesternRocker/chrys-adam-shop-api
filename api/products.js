@@ -41,14 +41,8 @@ export default async function handler(req, res) {
     const products = data.result ?? [];
 
     // TEST - styles de mockups disponibles pour le T-shirt
-const mockupStylesResponse = await fetch(
-  'https://api.printful.com/v2/catalog-products/456/mockup-styles',
-  { headers }
-);
 
-const mockupStylesData = await mockupStylesResponse.json();
-
-if (req.query.mockups === 'product') {
+    if (req.query.mockups === 'product') {
   const productResponse = await fetch(
     'https://api.printful.com/v2/products?store_product_ids=474053427',
     { headers }
@@ -58,6 +52,13 @@ if (req.query.mockups === 'product') {
 
   return res.status(productResponse.status).json(productData);
 }
+    
+    const mockupStylesResponse = await fetch(
+  'https://api.printful.com/v2/catalog-products/456/mockup-styles',
+  { headers }
+);
+
+const mockupStylesData = await mockupStylesResponse.json();
 
     // 2. Récupération des détails + variantes + prix
     const detailedProducts = await Promise.all(
