@@ -64,8 +64,13 @@ export default async function handler(req, res) {
 
     if (req.query.mockups === 'myproduct') {
   const myProductResponse = await fetch(
-    'https://api.printful.com/v2/products?store_product_ids=474053427',
-    { headers }
+    'https://api.printful.com/v2/products?store_product_ids=474053427&limit=1',
+    {
+      headers: {
+        ...headers,
+        'X-PF-Store-Id': '18785249',
+      },
+    }
   );
 
   const myProductData = await myProductResponse.json();
