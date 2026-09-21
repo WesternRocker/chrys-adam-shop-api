@@ -42,6 +42,17 @@ export default async function handler(req, res) {
 
     // TEST - styles de mockups disponibles pour le T-shirt
 
+  if (req.query.mockups === 'result') {
+  const resultResponse = await fetch(
+    'https://api.printful.com/v2/mockup-tasks?id=972123004',
+    { headers }
+  );
+
+  const resultData = await resultResponse.json();
+
+  return res.status(resultResponse.status).json(resultData);
+}  
+
   if (req.query.mockups === 'generate') {
   const mockupResponse = await fetch(
     'https://api.printful.com/v2/mockup-tasks',
