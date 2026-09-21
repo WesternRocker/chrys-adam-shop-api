@@ -1,13 +1,13 @@
 {
   "functions": {
-    "products.js": {
+    "api/products.js": {
       "maxDuration": 10
     }
   },
   "rewrites": [
     {
       "source": "/api/products",
-      "destination": "/products.js"
+     "destination": "/api/products.js"
     }
   ]
 }
