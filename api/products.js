@@ -40,6 +40,17 @@ export default async function handler(req, res) {
 
     const products = data.result ?? [];
 
+    if (req.query.mockups === 'myproduct') {
+  const myProductResponse = await fetch(
+    'https://api.printful.com/v2/products?store_product_ids=474053427',
+    { headers }
+  );
+
+  const myProductData = await myProductResponse.json();
+
+  return res.status(myProductResponse.status).json(myProductData);
+}
+
     // TEST - styles de mockups disponibles pour le T-shirt
 
   if (req.query.mockups === 'result') {
