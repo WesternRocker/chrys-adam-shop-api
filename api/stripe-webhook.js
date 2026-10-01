@@ -13,7 +13,10 @@ export default async function handler(req, res) {
     });
   }
 
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  const secrets = [
+  process.env.STRIPE_WEBHOOK_SECRET,
+  process.env.STRIPE_WEBHOOK_TEST_SECRET,
+].filter(Boolean);
   const signature = req.headers['stripe-signature'];
 
   if (!secret || !signature) {
