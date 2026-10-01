@@ -26,7 +26,9 @@ for (const item of items) {
     !Number.isInteger(item.productId) ||
     !Number.isInteger(item.quantity) ||
     item.quantity < 1 ||
-    item.quantity > 20
+    item.quantity > 20 ||
+!Number.isInteger(item.variantId) ||
+item.variantId <= 0
   ) {
     return res.status(400).json({
       error: 'Produit ou quantité invalide',
