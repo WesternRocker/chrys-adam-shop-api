@@ -146,6 +146,29 @@ if (!shippingResponse.ok) {
 const shippingData = await shippingResponse.json();
 const availableShippingRates = shippingData.result ?? [];
 
+    const selectedRate = availableShippingRates.find(
+  (rate) => String(rate.id) === String(shippingRateId)
+);
+
+if (!selectedRate) {
+  return res.status(400).json({
+    error: 'Mode de livraison invalide',
+  });
+}
+
+const shippingPrice = Number(selectedRate.rate);
+const shippingTotalCents = Math.round(shippingPrice * 100);
+
+if (
+  !Number.isFinite(shippingPrice) ||
+  shippingPrice < 0 ||
+  !Number.isSafeInteger(shippingTotalCents)
+) {
+  return res.status(400).json({
+    error: 'Prix de livraison invalide',
+  });
+}
+
 if (!Array.isArray(availableShippingRates) || availableShippingRates.length === 0) {
   return res.status(400).json({
     error: 'Aucun mode de livraison disponible',
