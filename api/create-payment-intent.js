@@ -21,6 +21,19 @@ if (!Array.isArray(items) || items.length === 0) {
   });
 }
 
+for (const item of items) {
+  if (
+    !Number.isInteger(item.productId) ||
+    !Number.isInteger(item.quantity) ||
+    item.quantity < 1 ||
+    item.quantity > 20
+  ) {
+    return res.status(400).json({
+      error: 'Produit ou quantité invalide',
+    });
+  }
+}
+    
 // Sécurité provisoire : désactiver les nouveaux paiements
 // jusqu'à la validation des prix côté serveur.
 return res.status(503).json({
