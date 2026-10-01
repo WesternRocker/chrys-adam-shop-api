@@ -53,6 +53,7 @@ if (!printfulResponse.ok) {
 const printfulData = await printfulResponse.json();
 const printfulProducts = printfulData.result ?? [];
     let productsTotalCents = 0;
+    const shippingItems = [];
 
 for (const item of items) {
   const product = printfulProducts.find(
@@ -100,6 +101,10 @@ for (const item of items) {
   }
 
   productsTotalCents += priceCents * item.quantity;
+  shippingItems.push({
+  variant_id: Number(variant.variant_id),
+  quantity: item.quantity,
+});
 }
 // Sécurité provisoire : désactiver les nouveaux paiements
 // jusqu'à la validation des prix côté serveur.
