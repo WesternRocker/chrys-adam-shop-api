@@ -120,6 +120,37 @@ for (const item of items) {
 });
 }
 // Sécurité provisoire : désactiver les nouveaux paiements
+    const shippingResponse = await fetch(
+  'https://api.printful.com/shipping/rates',
+  {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.PRINTFUL_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      recipient,
+      items: shippingItems,
+      currency: 'EUR',
+      locale: 'en_US',
+    }),
+  }
+);
+
+if (!shippingResponse.ok) {
+  return res.status(400).json({
+    error: 'Impossible de calculer les frais de livraison Printful',
+  });
+}
+
+const shippingData = await shippingResponse.json();
+const availableShippingRates = shippingData.result ?? [];
+
+if (!Array.isArray(availableShippingRates) || availableShippingRates.length === 0) {
+  return res.status(400).json({
+    error: 'Aucun mode de livraison disponible',
+  });
+}
 // jusqu'à la validation des prix côté serveur.
 return res.status(503).json({
   error: 'Paiements temporairement indisponibles.',
