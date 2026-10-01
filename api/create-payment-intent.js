@@ -170,6 +170,17 @@ const vatRates = {
 };
 
 const vatRate = vatRates[recipient.country_code];
+    if (!Number.isFinite(vatRate)) {
+  return res.status(400).json({
+    error: 'Pays de livraison non pris en charge',
+  });
+}
+
+const vatAmountCents = Math.round(
+  subtotalCents * vatRate / 100
+);
+
+const totalCents = subtotalCents + vatAmountCents;
 
 if (
   !Number.isFinite(shippingPrice) ||
