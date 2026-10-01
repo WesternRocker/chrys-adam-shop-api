@@ -35,7 +35,23 @@ item.variantId <= 0
     });
   }
 }
-    
+
+    const printfulResponse = await fetch(
+  'https://api.printful.com/store/products?status=all',
+  {
+    headers: {
+      Authorization: `Bearer ${process.env.PRINTFUL_TOKEN}`,
+      Accept: 'application/json',
+    },
+  }
+);
+
+if (!printfulResponse.ok) {
+  throw new Error('Impossible de vérifier le catalogue Printful');
+}
+
+const printfulData = await printfulResponse.json();
+const printfulProducts = printfulData.result ?? [];
 // Sécurité provisoire : désactiver les nouveaux paiements
 // jusqu'à la validation des prix côté serveur.
 return res.status(503).json({
