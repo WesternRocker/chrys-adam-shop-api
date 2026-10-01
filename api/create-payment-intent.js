@@ -158,6 +158,7 @@ if (!selectedRate) {
 
 const shippingPrice = Number(selectedRate.rate);
 const shippingTotalCents = Math.round(shippingPrice * 100);
+const subtotalCents = productsTotalCents + shippingTotalCents;
 
 if (
   !Number.isFinite(shippingPrice) ||
