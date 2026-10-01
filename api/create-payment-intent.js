@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { amount, recipient } = req.body;
+    const { amount, recipient, shippingRateId } = req.body;
     const items = req.body?.items;
 
 if (
