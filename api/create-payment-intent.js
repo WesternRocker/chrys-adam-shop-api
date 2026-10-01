@@ -159,6 +159,17 @@ if (!selectedRate) {
 const shippingPrice = Number(selectedRate.rate);
 const shippingTotalCents = Math.round(shippingPrice * 100);
 const subtotalCents = productsTotalCents + shippingTotalCents;
+const vatRates = {
+  AT: 20, BE: 21, BG: 20, HR: 25,
+  CY: 19, CZ: 21, DE: 19, DK: 25,
+  EE: 24, ES: 21, FI: 25.5, FR: 20,
+  GR: 24, HU: 27, IE: 23, IT: 22,
+  LT: 21, LU: 17, LV: 21, MT: 18,
+  NL: 21, PL: 23, PT: 23, RO: 21,
+  SE: 25, SI: 22, SK: 23,
+};
+
+const vatRate = vatRates[recipient.country_code];
 
 if (
   !Number.isFinite(shippingPrice) ||
