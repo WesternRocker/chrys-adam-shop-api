@@ -52,6 +52,55 @@ if (!printfulResponse.ok) {
 
 const printfulData = await printfulResponse.json();
 const printfulProducts = printfulData.result ?? [];
+    let productsTotalCents = 0;
+
+for (const item of items) {
+  const product = printfulProducts.find(
+    (p) => Number(p.id) === item.productId
+  );
+
+  if (!product) {
+    return res.status(400).json({
+      error: 'Produit introuvable chez Printful',
+    });
+  }
+
+  const detailResponse = await fetch(
+    `https://api.printful.com/store/products/${product.id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.PRINTFUL_TOKEN}`,
+        Accept: 'application/json',
+      },
+    }
+  );
+
+  if (!detailResponse.ok) {
+    throw new Error('Impossible de vérifier le produit Printful');
+  }
+
+  const detailData = await detailResponse.json();
+
+  const variant = (detailData.result?.sync_variants ?? []).find(
+    (v) => Number(v.id) === item.variantId
+  );
+
+  const price = Number(variant?.retail_price);
+  const priceCents = Math.round(price * 100);
+
+  if (
+    !variant ||
+    !Number.isFinite(price) ||
+    price <= 0 ||
+    !Number.isSafeInteger(priceCents)
+  ) {
+    return res.status(400).json({
+      error: 'Variante ou prix invalide',
+    });
+  }
+
+  productsTotalCents += priceCents * item.quantity;
+}
 // Sécurité provisoire : désactiver les nouveaux paiements
 // jusqu'à la validation des prix côté serveur.
 return res.status(503).json({
