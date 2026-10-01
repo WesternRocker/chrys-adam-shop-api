@@ -12,8 +12,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { amount } = req.body;
+    const { amount, recipient } = req.body;
     const items = req.body?.items;
+
+if (
+  !recipient ||
+  typeof recipient.country_code !== 'string' ||
+  !/^[A-Z]{2}$/.test(recipient.country_code) ||
+  !recipient.address1?.trim() ||
+  !recipient.city?.trim() ||
+  !recipient.zip?.trim()
+) {
+  return res.status(400).json({
+    error: 'Adresse de livraison invalide',
+  });
+}
 
 if (!Array.isArray(items) || items.length === 0) {
   return res.status(400).json({
