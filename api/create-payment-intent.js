@@ -13,6 +13,13 @@ export default async function handler(req, res) {
 
   try {
     const { amount } = req.body;
+    const items = req.body?.items;
+
+if (!Array.isArray(items) || items.length === 0) {
+  return res.status(400).json({
+    error: 'Panier invalide',
+  });
+}
 
 // Sécurité provisoire : désactiver les nouveaux paiements
 // jusqu'à la validation des prix côté serveur.
