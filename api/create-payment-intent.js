@@ -14,10 +14,11 @@ export default async function handler(req, res) {
   try {
     const { amount } = req.body;
 
-    if (!Number.isInteger(amount) || amount < 50) {
-      return res.status(400).json({ error: 'Invalid amount' });
-    }
-
+// Sécurité provisoire : désactiver les nouveaux paiements
+// jusqu'à la validation des prix côté serveur.
+return res.status(503).json({
+  error: 'Paiements temporairement indisponibles.',
+});
     const response = await fetch('https://api.stripe.com/v1/payment_intents', {
       method: 'POST',
       headers: {
