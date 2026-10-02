@@ -93,6 +93,15 @@ export default async function handler(req, res) {
       premium: false,
       error: "Vérification cryptographique à finaliser",
     });
+         const appleData = await appleResponse.json();
+
+    if (typeof appleData.signedTransactionInfo !== "string") {
+      return res.status(502).json({
+        verified: false,
+        premium: false,
+        error: "Réponse Apple sans transaction signée",
+      });
+    }
   } catch (error) {
     console.error("Configuration Apple indisponible");
 
