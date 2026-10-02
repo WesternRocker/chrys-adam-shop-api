@@ -51,9 +51,8 @@ export default async function handler(req, res) {
     });
   }
 
-  try {
-    createAppleToken();
-        const { transactionId } = req.body || {};
+   try {
+    const { transactionId } = req.body || {};
 
     if (typeof transactionId !== "string" ||
         !/^\d{1,30}$/.test(transactionId)) {
