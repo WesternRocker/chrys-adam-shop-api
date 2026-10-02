@@ -87,6 +87,16 @@ export default async function handler(req, res) {
         error: "Transaction non confirmée par Apple",
       });
     }
+
+         const appleData = await appleResponse.json();
+
+    if (typeof appleData.signedTransactionInfo !== "string") {
+      return res.status(502).json({
+        verified: false,
+        premium: false,
+        error: "Réponse Apple sans transaction signée",
+      });
+    }
          const verifier = new SignedDataVerifier(
       appleRootCertificates,
       true,
@@ -132,15 +142,7 @@ export default async function handler(req, res) {
         error: "Identifiant de transaction non conforme",
       });
     }
-         const appleData = await appleResponse.json();
-
-    if (typeof appleData.signedTransactionInfo !== "string") {
-      return res.status(502).json({
-        verified: false,
-        premium: false,
-        error: "Réponse Apple sans transaction signée",
-      });
-    }
+         
   } catch (error) {
     console.error("Configuration Apple indisponible");
 
