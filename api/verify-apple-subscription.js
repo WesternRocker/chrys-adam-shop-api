@@ -103,6 +103,14 @@ export default async function handler(req, res) {
     const transaction = await verifier.verifyAndDecodeTransaction(
       appleData.signedTransactionInfo
     );
+
+         if (String(transaction.transactionId) !== transactionId) {
+      return res.status(403).json({
+        verified: false,
+        premium: false,
+        error: "Identifiant de transaction non conforme",
+      });
+    }
          const appleData = await appleResponse.json();
 
     if (typeof appleData.signedTransactionInfo !== "string") {
