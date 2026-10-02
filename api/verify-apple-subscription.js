@@ -87,12 +87,6 @@ export default async function handler(req, res) {
         error: "Transaction non confirmée par Apple",
       });
     }
-
-    return res.status(503).json({
-      verified: false,
-      premium: false,
-      error: "Vérification cryptographique à finaliser",
-    });
          const verifier = new SignedDataVerifier(
       appleRootCertificates,
       true,
