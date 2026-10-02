@@ -53,6 +53,16 @@ export default async function handler(req, res) {
 
   try {
     createAppleToken();
+        const { transactionId } = req.body || {};
+
+    if (typeof transactionId !== "string" ||
+        !/^\d{1,30}$/.test(transactionId)) {
+      return res.status(400).json({
+        verified: false,
+        premium: false,
+        error: "Identifiant de transaction Apple invalide",
+      });
+    }
 
     return res.status(503).json({
       verified: false,
