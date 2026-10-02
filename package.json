@@ -1,0 +1,9 @@
+{
+  "name": "chrys-adam-shop-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@apple/app-store-server-library": "^2.0.0"
+  }
+}
