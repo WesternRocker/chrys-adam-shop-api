@@ -104,6 +104,19 @@ export default async function handler(req, res) {
       appleData.signedTransactionInfo
     );
 
+         const allowedProducts = [
+      "com.adamtrustcompany.ChrysAdamApp54.fanpremium.monthly",
+      "com.adamtrustcompany.ChrysAdamApp54.fanpremium.annual",
+    ];
+
+    if (!allowedProducts.includes(transaction.productId)) {
+      return res.status(403).json({
+        verified: false,
+        premium: false,
+        error: "Produit Apple non autorisé",
+      });
+    }
+     
          if (String(transaction.transactionId) !== transactionId) {
       return res.status(403).json({
         verified: false,
