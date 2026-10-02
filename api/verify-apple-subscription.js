@@ -1,5 +1,6 @@
 import { createPrivateKey, sign } from "node:crypto";
 import { SignedDataVerifier, Environment } from "@apple/app-store-server-library";
+import { X509Certificate } from "node:crypto";
 
 function createAppleToken() {
   const issuerId = process.env.APPLE_IAP_ISSUER_ID;
