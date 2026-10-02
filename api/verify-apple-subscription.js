@@ -88,15 +88,16 @@ export default async function handler(req, res) {
       });
     }
 
-         const appleData = await appleResponse.json();
+     const appleData = await appleResponse.json();
 
-    if (typeof appleData.signedTransactionInfo !== "string") {
-      return res.status(502).json({
-        verified: false,
-        premium: false,
-        error: "Réponse Apple sans transaction signée",
-      });
-    }
+if (typeof appleData.signedTransactionInfo !== "string") {
+  return res.status(502).json({
+    verified: false,
+    premium: false,
+    error: "Réponse Apple sans transaction signée",
+  });
+}
+     
          const verifier = new SignedDataVerifier(
       appleRootCertificates,
       true,
