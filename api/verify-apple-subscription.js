@@ -93,6 +93,16 @@ export default async function handler(req, res) {
       premium: false,
       error: "Vérification cryptographique à finaliser",
     });
+         const verifier = new SignedDataVerifier(
+      appleRootCertificates,
+      true,
+      Environment.PRODUCTION,
+      "com.adamtrustcompany.ChrysAdamApp54"
+    );
+
+    const transaction = await verifier.verifyAndDecodeTransaction(
+      appleData.signedTransactionInfo
+    );
          const appleData = await appleResponse.json();
 
     if (typeof appleData.signedTransactionInfo !== "string") {
