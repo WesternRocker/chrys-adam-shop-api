@@ -1,6 +1,7 @@
 import { createPrivateKey, sign } from "node:crypto";
 import { SignedDataVerifier, Environment } from "@apple/app-store-server-library";
 import { getAppleRootCertificates } from "./apple-root-certificates.js";
+import { createPrivateKey, sign, randomUUID } from "node:crypto";
 
 function createAppleToken() {
   const issuerId = process.env.APPLE_IAP_ISSUER_ID;
@@ -27,6 +28,7 @@ function createAppleToken() {
   iat: now,
   exp: now + 300,
   aud: "appstoreconnect-v1",
+  nonce: crypto.randomUUID(),
   bid: "com.adamtrustcompany.ChrysAdamApp54",
 });
 
