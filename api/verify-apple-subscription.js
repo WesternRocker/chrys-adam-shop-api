@@ -27,7 +27,7 @@ function createAppleToken() {
   iat: now,
   exp: now + 300,
   aud: "appstoreconnect-v1",
-  nonce: crypto.randomUUID(),
+  nonce: randomUUID(),
   bid: "com.adamtrustcompany.ChrysAdamApp54",
 });
 
