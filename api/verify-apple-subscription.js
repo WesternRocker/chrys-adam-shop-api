@@ -80,6 +80,12 @@ export default async function handler(req, res) {
     );
 
     if (!appleResponse.ok) {
+      const appleError = await appleResponse.text();
+console.error(
+  "Apple API error:",
+  appleResponse.status,
+  appleError.slice(0, 1000)
+);
             console.error("Apple API HTTP status:", appleResponse.status);
       return res.status(502).json({
         verified: false,
