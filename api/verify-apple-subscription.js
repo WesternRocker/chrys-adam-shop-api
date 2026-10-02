@@ -1,6 +1,7 @@
 import { createPrivateKey, sign, randomUUID } from "node:crypto";
 import { SignedDataVerifier, Environment } from "@apple/app-store-server-library";
 import { getAppleRootCertificates } from "./apple-root-certificates.js";
+
 function createAppleToken() {
   const issuerId = process.env.APPLE_IAP_ISSUER_ID;
   const keyId = process.env.APPLE_IAP_KEY_ID;
