@@ -142,12 +142,6 @@ export default async function handler(req, res) {
         error: "Identifiant de transaction non conforme",
       });
     }
-
-         return res.status(503).json({
-      verified: false,
-      premium: false,
-      error: "Rattachement de l'abonnement au compte à finaliser",
-    });
          
   } catch (error) {
     console.error("Configuration Apple indisponible");
