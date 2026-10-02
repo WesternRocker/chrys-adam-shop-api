@@ -21,11 +21,12 @@ function createAppleToken() {
   });
 
   const payload = encode({
-    iss: issuerId,
-    iat: now,
-    exp: now + 300,
-    aud: "appstoreconnect-v1",
-  });
+  iss: issuerId,
+  iat: now,
+  exp: now + 300,
+  aud: "appstoreconnect-v1",
+  bid: "com.adamtrustcompany.ChrysAdamApp54",
+});
 
   const message = `${header}.${payload}`;
 
