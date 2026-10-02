@@ -64,10 +64,30 @@ export default async function handler(req, res) {
       });
     }
 
+        const appleToken = createAppleToken();
+
+    const appleResponse = await fetch(
+      `https://api.storekit.itunes.apple.com/inApps/v1/transactions/${transactionId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${appleToken}`,
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!appleResponse.ok) {
+      return res.status(502).json({
+        verified: false,
+        premium: false,
+        error: "Transaction non confirmée par Apple",
+      });
+    }
+
     return res.status(503).json({
       verified: false,
       premium: false,
-      error: "Vérification des transactions à finaliser",
+      error: "Vérification cryptographique à finaliser",
     });
   } catch (error) {
     console.error("Configuration Apple indisponible");
