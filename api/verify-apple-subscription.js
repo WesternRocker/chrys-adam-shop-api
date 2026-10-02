@@ -68,6 +68,7 @@ export default async function handler(req, res) {
     }
 
         const appleToken = createAppleToken();
+        const appleRootCertificates = await getAppleRootCertificates();
 
     const appleResponse = await fetch(
       `https://api.storekit.itunes.apple.com/inApps/v1/transactions/${transactionId}`,
