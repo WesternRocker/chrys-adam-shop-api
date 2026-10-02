@@ -1,3 +1,46 @@
+import { createPrivateKey, sign } from "node:crypto";
+
+function createAppleToken() {
+  const issuerId = process.env.APPLE_IAP_ISSUER_ID;
+  const keyId = process.env.APPLE_IAP_KEY_ID;
+  const privateKey = process.env.APPLE_IAP_PRIVATE_KEY;
+
+  if (!issuerId || !keyId || !privateKey) {
+    throw new Error("Configuration Apple incomplète");
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+
+  const encode = (data) =>
+    Buffer.from(JSON.stringify(data)).toString("base64url");
+
+  const header = encode({
+    alg: "ES256",
+    kid: keyId,
+    typ: "JWT",
+  });
+
+  const payload = encode({
+    iss: issuerId,
+    iat: now,
+    exp: now + 300,
+    aud: "appstoreconnect-v1",
+  });
+
+  const message = `${header}.${payload}`;
+
+  const signature = sign(
+    "sha256",
+    Buffer.from(message),
+    {
+      key: createPrivateKey(privateKey.replace(/\\n/g, "\n")),
+      dsaEncoding: "ieee-p1363",
+    }
+  ).toString("base64url");
+
+  return `${message}.${signature}`;
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
@@ -8,11 +51,21 @@ export default async function handler(req, res) {
     });
   }
 
-  // La vérification Apple sera intégrée ici.
-  // Aucun abonnement n'est validé pour le moment.
-  return res.status(503).json({
-    verified: false,
-    premium: false,
-    error: "Validation Apple non configurée",
-  });
+  try {
+    createAppleToken();
+
+    return res.status(503).json({
+      verified: false,
+      premium: false,
+      error: "Vérification des transactions à finaliser",
+    });
+  } catch (error) {
+    console.error("Configuration Apple indisponible");
+
+    return res.status(503).json({
+      verified: false,
+      premium: false,
+      error: "Service Apple indisponible",
+    });
+  }
 }
