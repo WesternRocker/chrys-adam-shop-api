@@ -1,6 +1,5 @@
 import { createPrivateKey, sign } from "node:crypto";
 import { SignedDataVerifier, Environment } from "@apple/app-store-server-library";
-import { X509Certificate } from "node:crypto";
 import { getAppleRootCertificates } from "./apple-root-certificates.js";
 
 function createAppleToken() {
