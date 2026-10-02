@@ -80,6 +80,7 @@ export default async function handler(req, res) {
     );
 
     if (!appleResponse.ok) {
+            console.error("Apple API HTTP status:", appleResponse.status);
       return res.status(502).json({
         verified: false,
         premium: false,
