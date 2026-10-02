@@ -116,6 +116,20 @@ export default async function handler(req, res) {
         error: "Produit Apple non autorisé",
       });
     }
+
+         const expiration = Number(transaction.expiresDate);
+
+    if (
+      !Number.isFinite(expiration) ||
+      expiration <= Date.now() ||
+      transaction.revocationDate != null
+    ) {
+      return res.status(403).json({
+        verified: false,
+        premium: false,
+        error: "Abonnement expiré ou révoqué",
+      });
+    }
      
          if (String(transaction.transactionId) !== transactionId) {
       return res.status(403).json({
