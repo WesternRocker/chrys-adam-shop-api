@@ -67,6 +67,60 @@ export default async function handler(req, res) {
       });
     }
 
+     // Vérifier l'identité du fan avec Supabase
+const authorization = req.headers.authorization || "";
+
+const accessToken = authorization.startsWith("Bearer ")
+  ? authorization.slice(7).trim()
+  : "";
+
+if (!accessToken) {
+  return res.status(401).json({
+    verified: false,
+    premium: false,
+    error: "Connexion au compte fan requise",
+  });
+}
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+
+if (!supabaseUrl || !supabaseSecretKey) {
+  return res.status(503).json({
+    verified: false,
+    premium: false,
+    error: "Configuration Supabase incomplète",
+  });
+}
+
+const userResponse = await fetch(
+  `${supabaseUrl}/auth/v1/user`,
+  {
+    headers: {
+      apikey: supabaseSecretKey,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }
+);
+
+if (!userResponse.ok) {
+  return res.status(401).json({
+    verified: false,
+    premium: false,
+    error: "Session fan invalide ou expirée",
+  });
+}
+
+const fanUser = await userResponse.json();
+
+if (!fanUser.id) {
+  return res.status(401).json({
+    verified: false,
+    premium: false,
+    error: "Compte fan introuvable",
+  });
+}
+
         const appleToken = createAppleToken();
         const appleRootCertificates = await getAppleRootCertificates();
 
