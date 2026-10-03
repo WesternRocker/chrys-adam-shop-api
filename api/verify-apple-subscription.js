@@ -245,11 +245,85 @@ if (typeof appleData.signedTransactionInfo !== "string") {
       });
     }
 
-         return res.status(503).json({
-      verified: false,
-      premium: false,
-      error: "Rattachement de l'abonnement au compte à finaliser",
-    });
+       // Enregistrer l'abonnement Apple vérifié dans Supabase.
+const originalTransactionId = String(transaction.originalTransactionId || "");
+
+if (!/^\d{1,30}$/.test(originalTransactionId)) {
+  return res.status(403).json({
+    verified: false,
+    premium: false,
+    error: "Identifiant d'abonnement Apple invalide",
+  });
+}
+
+const subscription = {
+  user_id: fanUser.id,
+  original_transaction_id: originalTransactionId,
+  product_id: transaction.productId,
+  environment: selectedEnvironment.name,
+  expires_at: new Date(expiration).toISOString(),
+  revoked_at: null,
+};
+
+// Vérifier si cet abonnement appartient déjà à un compte.
+const existingResponse = await fetch(
+  `${supabaseUrl}/rest/v1/fan_subscriptions?original_transaction_id=eq.${originalTransactionId}&select=user_id`,
+  {
+    headers: {
+      apikey: supabaseSecretKey,
+      Authorization: `Bearer ${supabaseSecretKey}`,
+    },
+  }
+);
+
+if (!existingResponse.ok) {
+  return res.status(503).json({
+    verified: false,
+    premium: false,
+    error: "Lecture de l'abonnement impossible",
+  });
+}
+
+const existing = await existingResponse.json();
+
+if (existing.length > 1 ||
+    (existing.length === 1 && existing[0].user_id !== fanUser.id)) {
+  return res.status(409).json({
+    verified: false,
+    premium: false,
+    error: "Abonnement déjà associé à un autre compte",
+  });
+}
+
+const saveResponse = await fetch(
+  `${supabaseUrl}/rest/v1/fan_subscriptions?on_conflict=original_transaction_id`,
+  {
+    method: "POST",
+    headers: {
+      apikey: supabaseSecretKey,
+      Authorization: `Bearer ${supabaseSecretKey}`,
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=minimal",
+    },
+    body: JSON.stringify(subscription),
+  }
+);
+
+if (!saveResponse.ok) {
+  console.error("Erreur enregistrement abonnement:", saveResponse.status);
+  return res.status(503).json({
+    verified: false,
+    premium: false,
+    error: "Enregistrement de l'abonnement impossible",
+  });
+}
+
+return res.status(200).json({
+  verified: true,
+  premium: true,
+  productId: transaction.productId,
+  expiresAt: subscription.expires_at,
+});
          
   } catch (error) {
     console.error("Configuration Apple indisponible");
