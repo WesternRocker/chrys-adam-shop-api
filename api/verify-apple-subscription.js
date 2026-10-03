@@ -145,12 +145,12 @@ if (typeof appleData.signedTransactionInfo !== "string") {
   });
 }
      
-         const verifier = new SignedDataVerifier(
-      appleRootCertificates,
-      true,
-      Environment.PRODUCTION,
-      "com.adamtrustcompany.ChrysAdamApp54"
-    );
+        const verifier = new SignedDataVerifier(
+  appleRootCertificates,
+  true,
+  selectedEnvironment.verifierEnvironment,
+  "com.adamtrustcompany.ChrysAdamApp54"
+);
 
     const transaction = await verifier.verifyAndDecodeTransaction(
       appleData.signedTransactionInfo
