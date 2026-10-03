@@ -70,32 +70,72 @@ export default async function handler(req, res) {
         const appleToken = createAppleToken();
         const appleRootCertificates = await getAppleRootCertificates();
 
-    const appleResponse = await fetch(
-      `https://api.storekit.itunes.apple.com/inApps/v1/transactions/${transactionId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${appleToken}`,
-          Accept: "application/json",
-        },
-      }
-    );
+   const environments = [
+  {
+    name: "PRODUCTION",
+    url: "https://api.storekit.itunes.apple.com",
+    verifierEnvironment: Environment.PRODUCTION,
+  },
+  {
+    name: "SANDBOX",
+    url: "https://api.storekit-sandbox.itunes.apple.com",
+    verifierEnvironment: Environment.SANDBOX,
+  },
+];
 
-    if (!appleResponse.ok) {
-      const appleError = await appleResponse.text();
-console.error(
-  "Apple API error:",
-  appleResponse.status,
-  appleError.slice(0, 1000)
-);
-            console.error("Apple API HTTP status:", appleResponse.status);
-      return res.status(502).json({
-        verified: false,
-        premium: false,
-        error: "Transaction non confirmée par Apple",
-      });
+let appleData = null;
+let selectedEnvironment = null;
+
+for (const environment of environments) {
+  const response = await fetch(
+    `${environment.url}/inApps/v1/transactions/${transactionId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${appleToken}`,
+        Accept: "application/json",
+      },
     }
+  );
 
-     const appleData = await appleResponse.json();
+  if (response.ok) {
+    appleData = await response.json();
+    selectedEnvironment = environment;
+    break;
+  }
+
+  console.error(
+    `Apple ${environment.name} HTTP status:`,
+    response.status
+  );
+
+  // Une erreur 401 concerne l'authentification.
+  // Inutile de tenter Sandbox avec le même jeton.
+  if (response.status === 401) {
+    return res.status(502).json({
+      verified: false,
+      premium: false,
+      error: "Authentification Apple refusée",
+    });
+  }
+
+  // Transaction absente en production :
+  // essayer l'environnement Sandbox.
+  if (response.status !== 404) {
+    return res.status(502).json({
+      verified: false,
+      premium: false,
+      error: "Vérification Apple indisponible",
+    });
+  }
+}
+
+if (!appleData || !selectedEnvironment) {
+  return res.status(404).json({
+    verified: false,
+    premium: false,
+    error: "Transaction introuvable chez Apple",
+  });
+}
 
 if (typeof appleData.signedTransactionInfo !== "string") {
   return res.status(502).json({
