@@ -145,7 +145,7 @@ if (typeof appleData.signedTransactionInfo !== "string") {
   });
 }
      
-        const verifier = new SignedDataVerifier(
+       const verifier = new SignedDataVerifier(
   appleRootCertificates,
   true,
   selectedEnvironment.verifierEnvironment,
