@@ -326,7 +326,15 @@ const saveResponse = await fetch(
 );
 
 if (!saveResponse.ok) {
-  console.error("Erreur enregistrement abonnement:", saveResponse.status);
+  const supabaseErrorBody = await saveResponse.text();
+
+  console.error(
+    "Erreur enregistrement abonnement:",
+    saveResponse.status,
+    "body:",
+    supabaseErrorBody
+  );
+
   return res.status(503).json({
     verified: false,
     premium: false,
