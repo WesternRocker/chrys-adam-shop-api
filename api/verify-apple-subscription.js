@@ -157,10 +157,14 @@ for (const environment of environments) {
     break;
   }
 
-  console.error(
-    `Apple ${environment.name} HTTP status:`,
-    response.status
-  );
+  const appleErrorBody = await response.text();
+
+console.error(
+  `Apple ${environment.name} HTTP status:`,
+  response.status,
+  "body:",
+  appleErrorBody
+);
 
   // Une erreur 401 concerne l'authentification.
   // Inutile de tenter Sandbox avec le même jeton.
