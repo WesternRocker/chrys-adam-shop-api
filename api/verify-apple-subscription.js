@@ -122,6 +122,18 @@ if (!fanUser.id) {
 }
 
         const appleToken = createAppleToken();
+
+     const [jwtHeader, jwtPayload] = appleToken.split(".");
+
+console.log(
+  "APPLE JWT HEADER:",
+  Buffer.from(jwtHeader, "base64url").toString("utf8")
+);
+
+console.log(
+  "APPLE JWT PAYLOAD:",
+  Buffer.from(jwtPayload, "base64url").toString("utf8")
+);
         const appleRootCertificates = await getAppleRootCertificates();
 
    const environments = [
