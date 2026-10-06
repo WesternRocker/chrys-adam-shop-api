@@ -136,16 +136,16 @@ console.log(
 );
         const appleRootCertificates = await getAppleRootCertificates();
 
-   const environments = [
-  {
-    name: "PRODUCTION",
-    url: "https://api.storekit.itunes.apple.com",
-    verifierEnvironment: Environment.PRODUCTION,
-  },
+  const environments = [
   {
     name: "SANDBOX",
     url: "https://api.storekit-sandbox.itunes.apple.com",
     verifierEnvironment: Environment.SANDBOX,
+  },
+  {
+    name: "PRODUCTION",
+    url: "https://api.storekit.itunes.apple.com",
+    verifierEnvironment: Environment.PRODUCTION,
   },
 ];
 
