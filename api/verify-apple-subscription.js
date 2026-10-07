@@ -66,61 +66,6 @@ export default async function handler(req, res) {
         error: "Identifiant de transaction Apple invalide",
       });
     }
-
-     // Vérifier l'identité du fan avec Supabase
-const authorization = req.headers.authorization || "";
-
-const accessToken = authorization.startsWith("Bearer ")
-  ? authorization.slice(7).trim()
-  : "";
-
-if (!accessToken) {
-  return res.status(401).json({
-    verified: false,
-    premium: false,
-    error: "Connexion au compte fan requise",
-  });
-}
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
-
-if (!supabaseUrl || !supabaseSecretKey) {
-  return res.status(503).json({
-    verified: false,
-    premium: false,
-    error: "Configuration Supabase incomplète",
-  });
-}
-
-const userResponse = await fetch(
-  `${supabaseUrl}/auth/v1/user`,
-  {
-    headers: {
-      apikey: supabaseSecretKey,
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }
-);
-
-if (!userResponse.ok) {
-  return res.status(401).json({
-    verified: false,
-    premium: false,
-    error: "Session fan invalide ou expirée",
-  });
-}
-
-const fanUser = await userResponse.json();
-
-if (!fanUser.id) {
-  return res.status(401).json({
-    verified: false,
-    premium: false,
-    error: "Compte fan introuvable",
-  });
-}
-
         const appleToken = createAppleToken();
 
      const [jwtHeader, jwtPayload] = appleToken.split(".");
@@ -261,92 +206,11 @@ if (typeof appleData.signedTransactionInfo !== "string") {
       });
     }
 
-       // Enregistrer l'abonnement Apple vérifié dans Supabase.
-const originalTransactionId = String(transaction.originalTransactionId || "");
-
-if (!/^\d{1,30}$/.test(originalTransactionId)) {
-  return res.status(403).json({
-    verified: false,
-    premium: false,
-    error: "Identifiant d'abonnement Apple invalide",
-  });
-}
-
-const subscription = {
-  user_id: fanUser.id,
-  original_transaction_id: originalTransactionId,
-  product_id: transaction.productId,
-  environment: selectedEnvironment.name,
-  expires_at: new Date(expiration).toISOString(),
-  revoked_at: null,
-};
-
-// Vérifier si cet abonnement appartient déjà à un compte.
-const existingResponse = await fetch(
-  `${supabaseUrl}/rest/v1/fan_subscriptions?original_transaction_id=eq.${originalTransactionId}&select=user_id`,
-  {
-    headers: {
-      apikey: supabaseSecretKey,
-      Authorization: `Bearer ${supabaseSecretKey}`,
-    },
-  }
-);
-
-if (!existingResponse.ok) {
-  return res.status(503).json({
-    verified: false,
-    premium: false,
-    error: "Lecture de l'abonnement impossible",
-  });
-}
-
-const existing = await existingResponse.json();
-
-if (existing.length > 1 ||
-    (existing.length === 1 && existing[0].user_id !== fanUser.id)) {
-  return res.status(409).json({
-    verified: false,
-    premium: false,
-    error: "Abonnement déjà associé à un autre compte",
-  });
-}
-
-const saveResponse = await fetch(
-  `${supabaseUrl}/rest/v1/fan_subscriptions?on_conflict=original_transaction_id`,
-  {
-    method: "POST",
-    headers: {
-      apikey: supabaseSecretKey,
-      Authorization: `Bearer ${supabaseSecretKey}`,
-      "Content-Type": "application/json",
-      Prefer: "resolution=merge-duplicates,return=minimal",
-    },
-    body: JSON.stringify(subscription),
-  }
-);
-
-if (!saveResponse.ok) {
-  const supabaseErrorBody = await saveResponse.text();
-
-  console.error(
-    "Erreur enregistrement abonnement:",
-    saveResponse.status,
-    "body:",
-    supabaseErrorBody
-  );
-
-  return res.status(503).json({
-    verified: false,
-    premium: false,
-    error: "Enregistrement de l'abonnement impossible",
-  });
-}
-
 return res.status(200).json({
   verified: true,
   premium: true,
   productId: transaction.productId,
-  expiresAt: subscription.expires_at,
+  expiresAt: new Date(expiration).toISOString(),
 });
          
   } catch (error) {
